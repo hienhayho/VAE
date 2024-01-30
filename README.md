@@ -4,4 +4,4 @@ Some models supports:
 
 | Model | Code |
 | --- | --- |
-| Original VAE | [models/OriginalVAE.py](/models/OriginalVAE.py) |
+| Original VAE | [OriginalVAE.py](/models/OriginalVAE.py) |
