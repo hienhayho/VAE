@@ -1,6 +1,6 @@
 ## VAE Models Implementations
 
-Some models supports:
+Some models supported:
 
 | Model | Code |
 | --- | --- |
