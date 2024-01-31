@@ -6,6 +6,12 @@
 | --- | --- |
 | Original VAE | [OriginalVAE.py](/models/OriginalVAE.py) |
 
+# Installation:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
 # Training:
 
 ```python
