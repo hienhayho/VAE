@@ -23,3 +23,4 @@ python3 -m pip install -r requirements.txt
 ```python
 python3 train.py --model origin --dataset mnist --data_path ./ --batch_size 100 --epochs 30
 ```
+> Note: Results will be saved to `./results`
