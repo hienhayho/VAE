@@ -5,3 +5,4 @@
 */MNIST/
 */cifar*
 /py/
+__pycache__/
