@@ -2,9 +2,9 @@
 
 # Some models supported:
 
-| Model | Code |
-| --- | --- |
-| Original VAE | [OriginalVAE.py](/models/OriginalVAE.py) |
+| Model | Code | Dataset |
+| --- | --- | --- |
+| Original VAE | [OriginalVAE.py](/models/OriginalVAE.py) | MNIST |
 
 # Installation:
 
