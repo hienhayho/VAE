@@ -9,6 +9,12 @@
 # Installation:
 
 ```bash
+python3 -m pip install virtualenv
+
+python3 -m venv env
+
+source env/bin/activates
+
 python3 -m pip install -r requirements.txt
 ```
 
