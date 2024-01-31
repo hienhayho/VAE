@@ -1,1 +1,1 @@
-from .OriginalVAE import *
+from .originalVAE import *

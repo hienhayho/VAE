@@ -41,9 +41,9 @@ class Decoder(nn.Module):
         return x_hat
     
     
-class OriginalVAE(nn.Module):
+class originVAE(nn.Module):
     def __init__(self, encoder, decoder, input_dim = 784, hidden_dim = 400, latent_dim = 200):
-        super(OriginalVAE, self).__init__()
+        super(originVAE, self).__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
@@ -80,7 +80,7 @@ class OriginalVAE(nn.Module):
             # If the log file doesn't exist, create it and configure logging
             configure_logging(log_file_path)
         
-        initial_logging('OriginalVAE', args, subfolder=current_day)
+        initial_logging('originVAE', args, subfolder=current_day)
         
         new_save_path = os.path.join(args.save_path, current_day)
         

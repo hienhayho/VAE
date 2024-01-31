@@ -1,7 +1,7 @@
 def load_model(args):
     if args.model == 'origin':
-        from .OriginalVAE import Encoder, Decoder, OriginalVAE
-        model = OriginalVAE(encoder=Encoder, decoder=Decoder)
+        from .originalVAE import Encoder, Decoder, originVAE
+        model = originVAE(encoder=Encoder, decoder=Decoder)
     elif args.model == 'cnn':
         pass
     else:

@@ -23,7 +23,7 @@ set_seed(42)
 
 def parse_args():
     parser = argparse.ArgumentParser(description='VAE')
-    parser.add_argument('--model', type=str, default='OriginalVAE', choices=['origin', 'cnn'], required=True)
+    parser.add_argument('--model', type=str, default='originVAE', choices=['origin', 'cnn'], required=True)
     parser.add_argument('--dataset', type=str, choices=["mnist", "cifar", "custom"], required=True)
     parser.add_argument('--data_path', type=str, default='./data')
     parser.add_argument('--save_path', type=str, default='./results')

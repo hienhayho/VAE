@@ -4,7 +4,7 @@
 
 | Model | Code | Dataset |
 | --- | --- | --- |
-| Original VAE | [OriginalVAE.py](/models/OriginalVAE.py) | MNIST |
+| Original VAE | [originVAE.py](/models/originVAE.py) | MNIST |
 
 # Installation:
 
