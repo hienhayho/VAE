@@ -1,10 +1,24 @@
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 import os
 import numpy as np
 from assets.logging import configure_logging, log_info, initial_logging
 from assets.date import get_current_date
 import time
+
+
+def set_seed(seed):
+    # Set seed for random module
+    torch.manual_seed(seed)
+    # Set seed for numpy module
+    np.random.seed(seed)
+    # Set seed for CUDA (if available)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+# Sử dụng seed cố định (ví dụ: seed = 42)
+set_seed(42)
 
 class Encoder(nn.Module):
     def __init__(self, input_dim = 784, hidden_dim = 400, latent_dim = 200):
@@ -49,6 +63,14 @@ class originVAE(nn.Module):
         self.latent_dim = latent_dim
         self.Encoder = encoder(input_dim, hidden_dim, latent_dim)
         self.Decoder = decoder(latent_dim, hidden_dim, input_dim)
+
+        self.apply(self.initialize_weights)
+        
+    def initialize_weights(self, m):
+        if isinstance(m, nn.Linear):
+            init.xavier_normal_(m.weight)
+            if m.bias is not None:
+                init.constant_(m.bias, 0)
     
     def reparameterization(self, mean, var):
         DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -99,52 +121,74 @@ class originVAE(nn.Module):
         # Start training, count time elapsed
         start_time = time.time()
         log_info("Start training...")
-        min_loss = np.inf
+        # min_loss = np.inf
         
-        for epoch in range(args.epochs):
-            self.train()
-            train_loss = 0
-            train_start_time = time.time()
-            for batch_idx, (data, _) in enumerate(train_loader):
-                data = data.view(args.batch_size, self.input_dim)
-                data = data.to(DEVICE)
-                optimizer.zero_grad()
-                x_hat, mean, log_var = self(data)
-                loss = loss_function(data, x_hat, mean, log_var)
-                loss.backward()
-                train_loss += loss.item()
-                optimizer.step()
-            train_end_time = time.time()
-            train_loss /= (batch_idx*args.batch_size)
-            info = "[Train] Epoch " + str(epoch + 1) + ":" + "\tAverage Loss: " + str(train_loss) + "\tEpoch training time: {:.2f} seconds".format(train_end_time - train_start_time)
-            log_info(info)
+        # for epoch in range(args.epochs):
+        #     self.train()
+        #     train_loss = 0
+        #     train_start_time = time.time()
+        #     for batch_idx, (data, _) in enumerate(train_loader):
+        #         data = data.view(args.batch_size, self.input_dim)
+        #         data = data.to(DEVICE)
+        #         optimizer.zero_grad()
+        #         x_hat, mean, log_var = self(data)
+        #         loss = loss_function(data, x_hat, mean, log_var)
+        #         loss.backward()
+        #         train_loss += loss.item()
+        #         optimizer.step()
+        #     train_end_time = time.time()
+        #     train_loss /= (batch_idx*args.batch_size)
+        #     info = "[Train] Epoch " + str(epoch + 1) + ":" + "\tAverage Loss: " + str(train_loss) + "\tEpoch training time: {:.2f} seconds".format(train_end_time - train_start_time)
+        #     log_info(info)
             
-            if epoch % args.val_interval == 0:
-                self.eval()
-                test_loss = 0
-                with torch.no_grad():
-                    for batch_idx, (data, _) in enumerate(test_loader):
-                        data = data.view(args.batch_size, self.input_dim)
-                        data = data.to(DEVICE)
-                        x_hat, mean, log_var = self(data)
-                        loss = loss_function(data, x_hat, mean, log_var)
-                        test_loss += loss.item()
-                test_loss /= (batch_idx*args.batch_size)
-                info = "[Val] Epoch " + str(epoch + 1) + ":" + "\tAverage Loss: " + str(test_loss)
-                log_info(info)
+        #     if epoch % args.val_interval == 0:
+        #         self.eval()
+        #         test_loss = 0
+        #         with torch.no_grad():
+        #             for batch_idx, (data, _) in enumerate(test_loader):
+        #                 data = data.view(args.batch_size, self.input_dim)
+        #                 data = data.to(DEVICE)
+        #                 x_hat, mean, log_var = self(data)
+        #                 loss = loss_function(data, x_hat, mean, log_var)
+        #                 test_loss += loss.item()
+        #         test_loss /= (batch_idx*args.batch_size)
+        #         info = "[Val] Epoch " + str(epoch + 1) + ":" + "\tAverage Loss: " + str(test_loss)
+        #         log_info(info)
                 
-                if test_loss < min_loss and args.save_model:
-                    for f in os.listdir(new_save_path):
-                        if f.endswith('.pth'):
-                            os.remove(os.path.join(new_save_path, f))
-                            log_info("Remove {}".format(f))
+        #         if test_loss < min_loss and args.save_model:
+        #             for f in os.listdir(new_save_path):
+        #                 if f.endswith('.pth'):
+        #                     os.remove(os.path.join(new_save_path, f))
+        #                     log_info("Remove {}".format(f))
                     
-                    min_loss = test_loss
-                    log_info("Model with lowest loss {:.4f} is saved at {}".format(min_loss, new_save_path))
-                    torch.save(self.state_dict(), os.path.join(new_save_path, f'Epoch_{epoch + 1}_{test_loss:4f}.pth'))
-        end_time = time.time()
-        log_info("Finish training")
-        log_info("Time elapsed: {:.2f} seconds".format(end_time - start_time))
+        #             min_loss = test_loss
+        #             log_info("Model with lowest loss {:.4f} is saved at {}".format(min_loss, new_save_path))
+        #             torch.save(self.state_dict(), os.path.join(new_save_path, f'Epoch_{epoch + 1}_{test_loss:4f}.pth'))
+        # end_time = time.time()
+        # log_info("Finish training")
+        # log_info("Time elapsed: {:.2f} seconds".format(end_time - start_time))
+
+        self.train()
+
+        for epoch in range(args.epochs):
+            overall_loss = 0
+            for batch_idx, (x, _) in enumerate(train_loader):
+                x = x.view(args.batch_size, 784)
+                x = x.to(DEVICE)
+
+                optimizer.zero_grad()
+
+                x_hat, mean, log_var = self(x)
+                loss = loss_function(x, x_hat, mean, log_var)
+                
+                overall_loss += loss.item()
+                
+                loss.backward()
+                optimizer.step()
+                
+            print("\tEpoch", epoch + 1, "complete!", "\tAverage Loss: ", overall_loss / (batch_idx*args.batch_size))
+            
+        print("Finish!!")
         
 def loss_function(x, x_hat, mean, log_var):
     reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
