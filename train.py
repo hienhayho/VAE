@@ -10,20 +10,10 @@ from torchvision.datasets import MNIST
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torch.optim import Adam
+from utils import set_seed
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-def set_seed(seed):
-    # Set seed for random module
-    torch.manual_seed(seed)
-    # Set seed for numpy module
-    np.random.seed(seed)
-    # Set seed for CUDA (if available)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
-
-# Sử dụng seed cố định (ví dụ: seed = 42)
-set_seed(42)
+set_seed(226)
 
 """
     A simple implementation of Gaussian MLP Encoder and Decoder
