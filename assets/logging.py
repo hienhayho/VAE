@@ -28,26 +28,31 @@ def configure_logging(filename):
     logger.addHandler(stream_handler)
 
 def initial_logging(model_name, args, subfolder = None):
-    log_info("Model: {}".format(model_name))
-    log_info("Dataset: {}".format(args.dataset))
-    log_info("Optimizer: {}".format(args.optim))
+    log_info("Configuration ...")
+    log_info("Model:         {}".format(model_name))
+    log_info("Dataset:       {}".format(args.dataset))
+    log_info("Optimizer:     {}".format(args.optim))
     log_info("Learning rate: {}".format(args.lr))
-    log_info("Batch size: {}".format(args.batch_size))
-    log_info("Epochs: {}".format(args.epochs))
-    log_info("Val interval: {}".format(args.val_interval))
-    log_info("Save model: {}".format(args.save_model)) 
+    log_info("Batch size:    {}".format(args.batch_size))
+    log_info("Seed:          {}".format(args.seed))
+    log_info("Epochs:        {}".format(args.epochs))
+    log_info("Val interval:  {}".format(args.val_interval))
+    log_info("Save model:    {}".format(str(args.save_model))) 
     if subfolder:
         save_path = args.save_path + "/" + subfolder + "/"
-        log_info("Save path: {}".format(save_path))
+        log_info("Save path:     {}".format(save_path))
     else:
-        log_info("Save path: {}".format(args.save_path))
+        log_info("Save path:     {}".format(args.save_path))
+    
 
 def log_info(message):
     if message != "":
         logging.info(message)
 
 def log_error(message):
-    logging.error(message)
+    if message != "":
+        logging.error(message)
 
 def log_warning(message):
-    logging.warning(message)
+    if message != "":
+        logging.warning(message)

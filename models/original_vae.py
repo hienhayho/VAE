@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.init as init
 import os
-import numpy as np
-from assets.logging import configure_logging, log_info, initial_logging
-from assets.date import get_current_date
 import time
+import numpy as np
+from assets.logging import log_info
+from assets.utils import init_result_path
 from losses.origin_vae import loss_function
 
 class Encoder(nn.Module):
@@ -74,24 +74,8 @@ class Model(nn.Module):
 
     def train_epoch(self, train_loader, test_loader, args):
         assert args.save_path is not None, 'Save path should be given to train model'
-        
-        # Create save path folder if not exist        
-        if not os.path.exists(args.save_path):
-            os.makedirs(args.save_path, exist_ok=True)
-        log_file_path = os.path.join(args.save_path, 'training.log')
-        
-        # Make folder train name with current day
-        current_day = get_current_date()
-        os.makedirs(os.path.join(args.save_path, current_day))
-        log_file_path = os.path.join(args.save_path, current_day, 'training.log')
-        if not os.path.exists(log_file_path):
-            os.system('touch {}'.format(log_file_path))
-            # If the log file doesn't exist, create it and configure logging
-            configure_logging(log_file_path)
-        
-        initial_logging('originVAE', args, subfolder=current_day)
-        
-        new_save_path = os.path.join(args.save_path, current_day)
+        # Create training result path
+        new_save_path = init_result_path(args)
         
         # Load model to device
         DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
