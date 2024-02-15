@@ -12,7 +12,7 @@
 ### Some models supported:
 
 | Model | Code | Dataset |
-| --- | --- | --- |
+| --- | --- | :---: |
 | Original VAE | [original_vae.py](/models/original_vae.py) | mnist |
 
 ##
