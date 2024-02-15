@@ -1,5 +1,6 @@
 from .mnist import load_mnist
 from .cifar import load_cifar
+from .custom import load_custom
 
 def load_dataset(args):
     if args.dataset == 'mnist':
@@ -7,7 +8,7 @@ def load_dataset(args):
     elif args.dataset == 'cifar':
         train_loader, test_loader = load_cifar(args)
     elif args.dataset == 'custom':
-        pass
+        train_loader, test_loader = load_custom(args)
     else:
         raise NotImplementedError
     return train_loader, test_loader
