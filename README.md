@@ -17,6 +17,7 @@ Some models supported:
 
 Installation:
 =================
+* Python virual env
 ```bash
 python3 -m pip install virtualenv
 
@@ -26,6 +27,9 @@ source env/bin/activate
 
 python3 -m pip install -r requirements.txt
 ```
+
+* Docker
+> Note: Update later
 
 Training:
 =================
