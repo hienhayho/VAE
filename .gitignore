@@ -1,7 +1,10 @@
 /data/
 *.pth
 *.log
+MNIST/
+CIFAR10/
 */MNIST/
+*/CIFAR10/
 */cifar*
 /py/
 __pycache__/
