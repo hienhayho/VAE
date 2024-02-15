@@ -1,22 +1,22 @@
-# VAE Models Implementations
+## VAE Models Implementations
 
-Table of contents
-=================
+### Table of contents
+
 <!--ts-->
    * [Models supported](#some-models-supported)
    * [Installation](#installation)
    * [Training](#training)
+   * [Inference](#inference)
 <!--te-->
 
-Some models supported:
-================
+### Some models supported:
 
 | Model | Code | Dataset |
 | --- | --- | --- |
 | Original VAE | [original_vae.py](/models/original_vae.py) | MNIST |
 
-Installation:
-=================
+### Installation:
+
 * Python virual env
 ```bash
 python3 -m pip install virtualenv
@@ -29,13 +29,15 @@ python3 -m pip install -r requirements.txt
 ```
 
 * Docker
-> Note: Update later
+> Note: Update later.
 
-Training:
-=================
+### Training:
 
 * Example
 ```python
 python3 train.py --model origin --dataset mnist --data_path ./ --batch_size 100 --epochs 30
 ```
 > Note: Training results will be saved to `./results`
+
+### Inference:
+> Note: Update later.
