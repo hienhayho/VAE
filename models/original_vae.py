@@ -41,9 +41,9 @@ class Decoder(nn.Module):
         x_hat = torch.sigmoid(self.FC_output(h))
         return x_hat
     
-class originVAE(nn.Module):
+class Model(nn.Module):
     def __init__(self, input_dim = 784, hidden_dim = 400, latent_dim = 200):
-        super(originVAE, self).__init__()
+        super(Model, self).__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
