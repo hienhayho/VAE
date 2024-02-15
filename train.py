@@ -18,9 +18,9 @@ def main():
     
     # Model preparation
     model = load_model(args).to(DEVICE)
-    print("------------------")
+    print("-"*80)
     print(model)
-    print("------------------")
+    print("-"*80)
     
     # Trainning
     model.train_epoch(train_loader, test_loader, args)
