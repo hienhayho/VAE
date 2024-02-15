@@ -6,7 +6,7 @@ import time
 import numpy as np
 from assets.logging import log_info
 from assets.utils import init_result_path
-from losses.origin_vae import loss_function
+from losses.original_vae import loss_function
 
 class Encoder(nn.Module):
     def __init__(self, input_dim = 784, hidden_dim = 400, latent_dim = 200):
