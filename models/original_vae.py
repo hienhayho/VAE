@@ -6,7 +6,7 @@ import numpy as np
 from assets.logging import configure_logging, log_info, initial_logging
 from assets.date import get_current_date
 import time
-from assets.utils import set_seed
+from losses.origin_vae import loss_function
 
 class Encoder(nn.Module):
     def __init__(self, input_dim = 784, hidden_dim = 400, latent_dim = 200):
@@ -50,13 +50,14 @@ class originVAE(nn.Module):
         self.Encoder = Encoder(input_dim, hidden_dim, latent_dim)
         self.Decoder = Decoder(latent_dim, hidden_dim, input_dim)
 
-    #     self.apply(self.initialize_weights)
+        # Xavier Initialization
+        self.apply(self.initialize_weights)
         
-    # def initialize_weights(self, m):
-    #     if isinstance(m, nn.Linear):
-    #         init.xavier_normal_(m.weight)
-    #         if m.bias is not None:
-    #             init.constant_(m.bias, 0)
+    def initialize_weights(self, m):
+        if isinstance(m, nn.Linear):
+            init.xavier_normal_(m.weight)
+            if m.bias is not None:
+                init.constant_(m.bias, 0)
     
     def reparameterization(self, mean, var):
         DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -153,30 +154,3 @@ class originVAE(nn.Module):
         end_time = time.time()
         log_info("Finish training")
         log_info("Time elapsed: {:.2f} seconds".format(end_time - start_time))
-
-        # self.train()
-
-        # for epoch in range(args.epochs):
-        #     overall_loss = 0
-        #     for batch_idx, (x, _) in enumerate(train_loader):
-        #         x = x.view(args.batch_size, 784)
-        #         x = x.to(DEVICE)
-
-        #         optimizer.zero_grad()
-
-        #         x_hat, mean, log_var = self(x)
-        #         loss = loss_function(x, x_hat, mean, log_var)
-                
-        #         overall_loss += loss.item()
-                
-        #         loss.backward()
-        #         optimizer.step()
-                
-        #     print("\tEpoch", epoch + 1, "complete!", "\tAverage Loss: ", overall_loss / (batch_idx*args.batch_size))
-            
-        # print("Finish!!")
-        
-def loss_function(x, x_hat, mean, log_var):
-    reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
-    KLD      = - 0.5 * torch.sum(1+ log_var - mean.pow(2) - log_var.exp())
-    return reproduction_loss + KLD
