@@ -4,5 +4,4 @@ torchvision
 matplotlib
 tqdm
 opencv-python
-colorlog
 arrow

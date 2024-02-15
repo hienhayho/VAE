@@ -15,14 +15,14 @@ def main():
     print("Start loading dataset...")
     train_loader, test_loader = load_dataset(args)
     print("Finish loading dataset")
+    print("-"*80)
     
     # Model preparation
     model = load_model(args).to(DEVICE)
-    print("-"*80)
     print(model)
     print("-"*80)
     
-    # Trainning
+    # Training
     model.train_epoch(train_loader, test_loader, args)
     
 if __name__ == '__main__':

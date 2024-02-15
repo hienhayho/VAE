@@ -1,6 +1,4 @@
 import logging
-import colorlog
-from .date import get_current_date
 
 # Format example: 2018-07-11 20:12:06 - Admin logged in
 def configure_logging(filename):
