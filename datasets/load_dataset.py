@@ -1,6 +1,5 @@
 from .mnist import load_mnist
 from .cifar import load_cifar
-from .custom import load_custom
 
 def load_dataset(args):
     if args.dataset == 'mnist':
