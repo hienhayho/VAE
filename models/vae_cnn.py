@@ -160,7 +160,7 @@ class VAECNN(nn.Module):
 
                 optimizer.zero_grad()
 
-                x_hat, commitment_loss, codebook_loss, perplexity = model(x)
+                x_hat, commitment_loss, codebook_loss, perplexity = self(x)
                 recon_loss = mse_loss(x_hat, x)
                 
                 loss =  recon_loss + commitment_loss + codebook_loss
