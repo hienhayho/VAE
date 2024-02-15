@@ -1,9 +1,10 @@
 from torchvision.datasets import MNIST
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-    
+from assets.utils import set_seed
 
 def load_mnist(args):
+    set_seed(args.seed)
     assert args.dataset == 'mnist', 'Dataset should be mnist'
     assert args.data_path is not None, 'Dataset path should be given to load mnist'
     

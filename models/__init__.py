@@ -1,2 +1,1 @@
-from .originalVAE import *
-from .vae_cnn import *
+from models.load_model import load_model
