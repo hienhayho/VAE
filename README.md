@@ -13,7 +13,7 @@ Some models supported:
 
 | Model | Code | Dataset |
 | --- | --- | --- |
-| Original VAE | [originalVAE.py](/models/originalVAE.py) | MNIST |
+| Original VAE | [original_vae.py](/models/original_vae.py) | MNIST |
 
 Installation:
 =================
