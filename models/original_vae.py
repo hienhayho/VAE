@@ -135,6 +135,7 @@ class Model(nn.Module):
                     min_loss = test_loss
                     log_info("Model with lowest loss {:.4f} is saved at {}".format(min_loss, new_save_path))
                     torch.save(self.state_dict(), os.path.join(new_save_path, f'Epoch_{epoch + 1}_{test_loss:4f}.pth'))
+                log_info("-"*50)
         end_time = time.time()
         log_info("Finish training")
         log_info("Time elapsed: {:.2f} seconds".format(end_time - start_time))

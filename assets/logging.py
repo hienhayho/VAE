@@ -1,4 +1,6 @@
 import logging
+import platform
+import torch
 
 # Format example: 2018-07-11 20:12:06 - Admin logged in
 def configure_logging(filename):
@@ -26,6 +28,7 @@ def configure_logging(filename):
     logger.addHandler(stream_handler)
 
 def initial_logging(model_name, args, subfolder = None):
+    get_environment_info()
     log_info("Configuration ...")
     log_info("Model:         {}".format(model_name))
     log_info("Dataset:       {}".format(args.dataset))
@@ -41,7 +44,22 @@ def initial_logging(model_name, args, subfolder = None):
         log_info("Save path:     {}".format(save_path))
     else:
         log_info("Save path:     {}".format(args.save_path))
-    
+    log_info("-"*50)
+
+def get_environment_info():
+    log_info("Environment information ...")
+    log_info("Python version:   {}".format(platform.python_version()))
+    log_info("PyTorch version:  {}".format(torch.__version__))
+    log_info("CUDA available:   {}".format(torch.cuda.is_available()))
+    if torch.cuda.is_available():
+        log_info("CUDA version:     {}".format(torch.version.cuda))
+        log_info("CUDA device:      {}".format(torch.cuda.get_device_name(0)))
+    log_info("Platform:         {}".format(platform.platform()))
+    log_info("System:           {}".format(platform.system()))
+    log_info("Machine:          {}".format(platform.machine()))
+    log_info("Version:          {}".format(platform.version()))
+    log_info("User:             {}".format(platform.uname().node))
+    log_info("-"*50)
 
 def log_info(message):
     if message != "":
