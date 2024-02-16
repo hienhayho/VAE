@@ -130,11 +130,11 @@ class Model(nn.Module):
                     for f in os.listdir(new_save_path):
                         if f.endswith('.pth'):
                             os.remove(os.path.join(new_save_path, f))
-                            log_info("Remove {}".format(f))
+                            log_info("Remove {} ".format(f))
                     
                     min_loss = test_loss
-                    log_info("Model with lowest loss {:.4f} is saved at {}".format(min_loss, new_save_path))
-                    torch.save(self.state_dict(), os.path.join(new_save_path, f'Epoch_{epoch + 1}_{test_loss:4f}.pth'))
+                    log_info("Model with lowest loss {:.2f} is saved at {}".format(min_loss, new_save_path))
+                    torch.save(self.state_dict(), os.path.join(new_save_path, f'Epoch_{epoch + 1:03d}_{test_loss:.2f}.pth'))
                 log_info("-"*50)
         end_time = time.time()
         log_info("Finish training")
