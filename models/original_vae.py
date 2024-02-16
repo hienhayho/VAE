@@ -4,7 +4,7 @@ import torch.nn.init as init
 import os
 import time
 import numpy as np
-from assets.logging import log_info
+from assets.logging import log_info, finish_logging
 from assets.utils import init_result_path
 from losses.original_vae import loss_function
 
@@ -137,5 +137,4 @@ class Model(nn.Module):
                     torch.save(self.state_dict(), os.path.join(new_save_path, f'Epoch_{epoch + 1:03d}_{test_loss:.2f}.pth'))
                 log_info("-"*50)
         end_time = time.time()
-        log_info("Finish training")
-        log_info("Time elapsed: {:.2f} seconds".format(end_time - start_time))
+        finish_logging(end_time - start_time)

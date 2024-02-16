@@ -46,6 +46,12 @@ def initial_logging(model_name, args, subfolder = None):
         log_info("Save path:     {}".format(args.save_path))
     log_info("-"*50)
 
+def finish_logging(time):
+    log_info("Clear GPU cache ...")
+    torch.cuda.empty_cache()
+    log_info("Finish training")
+    log_info("Time elapsed: {:.2f} seconds".format(time))
+
 def get_environment_info():
     log_info("Environment information ...")
     log_info("Python version:   {}".format(platform.python_version()))
