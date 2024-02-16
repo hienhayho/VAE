@@ -1,8 +1,8 @@
 import torch
 from assets.utils import set_seed
 from assets.utils import parse_args
-from datasets.load_dataset import load_dataset
-from models.load_model import load_model
+from datasets import load_dataset
+from models import load_model
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def main():

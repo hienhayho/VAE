@@ -109,7 +109,7 @@ class Model(nn.Module):
                 optimizer.step()
             train_end_time = time.time()
             train_loss /= (batch_idx*args.batch_size)
-            info = "[Train] Epoch " + str(epoch + 1) + ":" + "\tAverage Loss: " + str(train_loss) + "\tEpoch training time: {:.2f} seconds".format(train_end_time - train_start_time)
+            info = f"[Train] Epoch {epoch + 1:03d}/{args.epochs:03d}: \tAverage Loss: {train_loss:.4f} \tTime: {train_end_time - train_start_time:.2f} seconds"
             log_info(info)
             
             if epoch % args.val_interval == 0:
@@ -123,7 +123,7 @@ class Model(nn.Module):
                         loss = loss_function(data, x_hat, mean, log_var)
                         test_loss += loss.item()
                 test_loss /= (batch_idx*args.batch_size)
-                info = "[Val] Epoch " + str(epoch + 1) + ":" + "\tAverage Loss: " + str(test_loss)
+                info = f"[Val]   Epoch {epoch + 1:03d}: \t\tAverage Loss: {test_loss:.4f}"
                 log_info(info)
                 
                 if test_loss < min_loss and args.save_model:

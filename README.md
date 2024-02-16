@@ -18,7 +18,7 @@
 ##
 ### Installation:
 
-* Python virual env
+* Python virtual env
 ```bash
 python3 -m pip install virtualenv
 
