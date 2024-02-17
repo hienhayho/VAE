@@ -16,7 +16,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='VAE')
     parser.add_argument('--model', type=str, default='originVAE', choices=['origin', 'cnn'], required=True)
     parser.add_argument('--dataset', type=str, choices=["mnist", "cifar", "custom"], required=True)
-    parser.add_argument('--data_path', type=str, default='./data')
+    parser.add_argument('--data_path', type=str, required=True)
     parser.add_argument('--save_path', type=str, default='./results')
     parser.add_argument('--optim', type=str, default='Adam', choices=['Adam', 'SGD'])
     parser.add_argument('--lr', type=float, default=0.001)
