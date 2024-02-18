@@ -47,7 +47,7 @@ class CustomDataset(Dataset):
             image = self.transform(image)
         return image, label
     
-class Model(nn.Module):
+class Model(nn.Module): # 0.76
     def __init__(self):
         super(Model, self).__init__()
         self.cnn1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
@@ -82,13 +82,99 @@ class Model(nn.Module):
             init.xavier_normal_(m.weight)
             if m.bias is not None:
                 init.constant_(m.bias, 0)
+
+class LeNet(nn.Module):
+    def __init__(self):
+        super(LeNet, self).__init__()
+        self.cnn1 = nn.Conv2d(3, 6, kernel_size=5, stride=1, padding=2)
+        self.maxpool = nn.MaxPool2d(kernel_size=2)
+        self.cnn2 = nn.Conv2d(6, 16, kernel_size=5)
+        self.relu = nn.ReLU()
+        self.fc1 = nn.Linear(16*6*6, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 2)
     
+    def forward(self, x):
+        x = self.relu(self.cnn1(x))
+        x = self.maxpool(x)
+        x = self.relu(self.cnn2(x))
+        x = self.maxpool(x)
+        x = x.view(x.size(0), -1)
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+class VGG16(nn.Module):
+    def __init__(self):
+        super(VGG16, self).__init__()
+        self.cnn1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
+        self.cnn2 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+        self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.cnn3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.cnn4 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
+        self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.cnn5 = nn.Conv2d(128, 256, kernel_size=3, padding=1)
+        self.cnn6 = nn.Conv2d(256, 256, kernel_size=3, padding=1)
+        self.cnn7 = nn.Conv2d(256, 256, kernel_size=3, padding=1)
+        self.maxpool3 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.cnn8 = nn.Conv2d(256, 512, kernel_size=3, padding=1)
+        self.cnn9 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
+        self.cnn10 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
+        self.maxpool4 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.cnn11 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
+        self.cnn12 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
+        self.cnn13 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
+        self.maxpool5 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.cnn14 = nn.Conv2d(512, 4096, kernel_size=7)
+        self.cnn15 = nn.Conv2d(4096, 4096, kernel_size=1)
+        self.cnn16 = nn.Conv2d(4096, 2, kernel_size=1)
+        self.relu = nn.ReLU()
+        self.apply(self.initialize_weights)
+        
+    def initialize_weights(self, m):
+        if isinstance(m, nn.Linear):
+            init.xavier_normal_(m.weight)
+            if m.bias is not None:
+                init.constant_(m.bias, 0)
+        if isinstance(m, nn.Conv2d):
+            init.xavier_normal_(m.weight)
+            if m.bias is not None:
+                init.constant_(m.bias, 0)
+
+    def forward(self, x):
+        x = self.relu(self.cnn1(x))
+        x = self.relu(self.cnn2(x))
+        x = self.maxpool1(x)
+        x = self.relu(self.cnn3(x))
+        x = self.relu(self.cnn4(x))
+        x = self.maxpool2(x)
+        x = self.relu(self.cnn5(x))
+        x = self.relu(self.cnn6(x))
+        x = self.relu(self.cnn7(x))
+        x = self.maxpool3(x)
+        x = self.relu(self.cnn8(x))
+        x = self.relu(self.cnn9(x))
+        x = self.relu(self.cnn10(x))
+        x = self.maxpool4(x)
+        x = self.relu(self.cnn11(x))
+        x = self.relu(self.cnn12(x))
+        x = self.relu(self.cnn13(x))
+        x = self.maxpool5(x)
+        x = self.relu(self.cnn14(x))
+        x = self.relu(self.cnn15(x))
+        x = self.cnn16(x)
+        x = x.view(x.size(0), -1)
+        return x
+
 def main():
     data_path = '../data'
-    batch_size = 128
+    batch_size = 1
     
     custom_tranform = transforms.Compose([
-        transforms.Resize((32, 32)), 
+        transforms.Resize((224, 224)), 
+        # transforms.RandomResizedCrop(size=(32, 32), antialias=True),
+        transforms.RandomHorizontalFlip(p=0.5),
         transforms.ToDtype(torch.float32, scale=True), 
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
@@ -100,9 +186,9 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     epochs = 20
-    model = Model().to('cuda')
+    model = VGG16().to('cuda')
     print(model)
-    summary(model, (3, 32, 32))
+    summary(model, (3, 224, 224))
     input("Press Enter to start training...")
     set_seed(226)
     criterion = nn.CrossEntropyLoss()
@@ -145,6 +231,7 @@ def main():
             torch.save(model.state_dict(), 'best_model.pth')
             print(f'Save best model with accuracy: {test_accuracy:.4f}')
         print('-'*50)
+    print("Best test accuracy: ", global_test_accuracy)
 
 if __name__ == '__main__':
     main()
