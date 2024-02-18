@@ -43,8 +43,6 @@ class CustomDataset(Dataset):
             label = 0
         else:
             label = 1
-        if self.transform:
-            image = self.transform(image)
         return image, label
     
 class Model(nn.Module): # 0.76
