@@ -169,7 +169,7 @@ class VGG16(nn.Module):
 
 def main():
     data_path = '../data'
-    batch_size = 1
+    batch_size = 128
     
     custom_tranform = transforms.Compose([
         transforms.Resize((32, 32)), 
