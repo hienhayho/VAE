@@ -172,7 +172,7 @@ def main():
     batch_size = 1
     
     custom_tranform = transforms.Compose([
-        transforms.Resize((224, 224)), 
+        transforms.Resize((32, 32)), 
         # transforms.RandomResizedCrop(size=(32, 32), antialias=True),
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.ToDtype(torch.float32, scale=True), 
@@ -186,9 +186,9 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     epochs = 20
-    model = VGG16().to('cuda')
+    model = Model().to('cuda')
     print(model)
-    summary(model, (3, 224, 224))
+    summary(model, (3, 32, 32))
     input("Press Enter to start training...")
     set_seed(226)
     criterion = nn.CrossEntropyLoss()
