@@ -211,7 +211,7 @@ def main():
             total_loss += loss.item()
             train_correct += correct
         print(f'[Train] Epoch {epoch+1:03d}/{epochs:03d}:\tLoss: {total_loss:.4f}\tAccuracy: {train_correct/len(train_loader.dataset):.4f}')
-
+        test_loss = 0
         model.eval()
         total_correct = 0
         with torch.no_grad():
@@ -220,12 +220,12 @@ def main():
                 labels = labels.to('cuda')
                 outputs = model(images)
                 loss = criterion(outputs, labels)
-                total_loss += loss.item()
+                test_loss += loss.item()
                 _, predicted = torch.max(outputs, 1)
                 correct = (predicted == labels).sum().item()
                 total_correct += correct
         test_accuracy = total_correct / len(test_loader.dataset)
-        print(f'[Test]  Epoch {epoch+1:03d}/{epochs:03d}:\tLoss: {total_loss:.4f}\tAccuracy: {test_accuracy:.4f}')
+        print(f'[Test]  Epoch {epoch+1:03d}/{epochs:03d}:\tLoss: {test_loss:.4f}\tAccuracy: {test_accuracy:.4f}')
         if test_accuracy > global_test_accuracy:
             global_test_accuracy = test_accuracy
             torch.save(model.state_dict(), 'best_model.pth')
