@@ -105,7 +105,7 @@ class LeNet(nn.Module):
         x = self.fc3(x)
         return x
 
-class VGG16(nn.Module):
+class VGG16(nn.Module): # (3, 224, 224)
     def __init__(self):
         super(VGG16, self).__init__()
         self.cnn1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
@@ -231,7 +231,7 @@ def main():
             torch.save(model.state_dict(), 'best_model.pth')
             print(f'Save best model with accuracy: {test_accuracy:.4f}')
         print('-'*50)
-    print("Best test accuracy: ", global_test_accuracy)
+    print(f"Best test accuracy: {global_test_accuracy:.4f}")
 
 if __name__ == '__main__':
     main()
