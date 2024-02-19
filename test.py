@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 from torchsummary import summary
 from assets import set_seed
-
+import time
 class CustomDataset(Dataset):
     def __init__(self, data_path, transform=None, train=False) -> None:
         super(Dataset).__init__()
@@ -45,7 +45,7 @@ class CustomDataset(Dataset):
             label = 1
         return image, label
     
-class Model(nn.Module): # 0.76
+class Model(nn.Module): # 0.8072 (3, 32, 32)
     def __init__(self):
         super(Model, self).__init__()
         self.cnn1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
@@ -53,7 +53,8 @@ class Model(nn.Module): # 0.76
         self.cnn3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
         self.cnn4 = nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1)
         self.cnn5 = nn.Conv2d(256, 512, kernel_size=3, padding=1)
-        self.fc1 = nn.Linear(512*8*8, 1024)
+        self.cnn6 = nn.Conv2d(512, 512, kernel_size=3, stride=2, padding=1)
+        self.fc1 = nn.Linear(512*4*4, 1024)
         self.fc2 = nn.Linear(1024, 256)
         self.fc3 = nn.Linear(256, 2)
         self.relu = nn.ReLU()
@@ -65,6 +66,7 @@ class Model(nn.Module): # 0.76
         x = self.relu(self.cnn3(x))
         x = self.relu(self.cnn4(x))
         x = self.relu(self.cnn5(x))
+        x = self.relu(self.cnn6(x))
         x = x.view(x.size(0), -1)
         x = self.relu(self.fc1(x))
         x = self.relu(self.fc2(x))
@@ -81,7 +83,7 @@ class Model(nn.Module): # 0.76
             if m.bias is not None:
                 init.constant_(m.bias, 0)
 
-class LeNet(nn.Module):
+class LeNet(nn.Module): # 0.7617 (3, 32, 32)
     def __init__(self):
         super(LeNet, self).__init__()
         self.cnn1 = nn.Conv2d(3, 6, kernel_size=5, stride=1, padding=2)
@@ -108,22 +110,22 @@ class VGG16(nn.Module): # (3, 224, 224)
         super(VGG16, self).__init__()
         self.cnn1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
         self.cnn2 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
-        self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.maxpool1 = nn.MaxPool2d(kernel_size=2)
         self.cnn3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
         self.cnn4 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
-        self.maxpool2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.maxpool2 = nn.MaxPool2d(kernel_size=2)
         self.cnn5 = nn.Conv2d(128, 256, kernel_size=3, padding=1)
         self.cnn6 = nn.Conv2d(256, 256, kernel_size=3, padding=1)
         self.cnn7 = nn.Conv2d(256, 256, kernel_size=3, padding=1)
-        self.maxpool3 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.maxpool3 = nn.MaxPool2d(kernel_size=2)
         self.cnn8 = nn.Conv2d(256, 512, kernel_size=3, padding=1)
         self.cnn9 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
         self.cnn10 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
-        self.maxpool4 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.maxpool4 = nn.MaxPool2d(kernel_size=2)
         self.cnn11 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
         self.cnn12 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
         self.cnn13 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
-        self.maxpool5 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.maxpool5 = nn.MaxPool2d(kernel_size=2)
         self.cnn14 = nn.Conv2d(512, 4096, kernel_size=7)
         self.cnn15 = nn.Conv2d(4096, 4096, kernel_size=1)
         self.cnn16 = nn.Conv2d(4096, 2, kernel_size=1)
@@ -162,7 +164,8 @@ class VGG16(nn.Module): # (3, 224, 224)
         x = self.relu(self.cnn14(x))
         x = self.relu(self.cnn15(x))
         x = self.cnn16(x)
-        x = x.view(x.size(0), -1)
+        # x = x.view(x.size(0), -1)
+        x = nn.Flatten(x)
         return x
 
 def main():
@@ -173,7 +176,7 @@ def main():
         transforms.Resize((32, 32)), 
         # transforms.RandomResizedCrop(size=(32, 32), antialias=True),
         transforms.RandomHorizontalFlip(p=0.5),
-        transforms.ToDtype(torch.float32, scale=True), 
+        transforms.ToDtype(torch.float32, scale=True),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
     
@@ -184,7 +187,8 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     epochs = 20
-    model = Model().to('cuda')
+    model = LeNet().to('cuda')
+    # model.load_state_dict(torch.load('best_model.pth'))
     print(model)
     summary(model, (3, 32, 32))
     input("Press Enter to start training...")
@@ -192,6 +196,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     global_test_accuracy = 0
+    start = time.time()
     for epoch in range(epochs):
         model.train()
         total_loss = 0
@@ -226,10 +231,11 @@ def main():
         print(f'[Test]  Epoch {epoch+1:03d}/{epochs:03d}:\tLoss: {test_loss:.4f}\tAccuracy: {test_accuracy:.4f}')
         if test_accuracy > global_test_accuracy:
             global_test_accuracy = test_accuracy
-            torch.save(model.state_dict(), 'best_model.pth')
+            torch.save(model.state_dict(), 'best_model_lenet_after.pth')
             print(f'Save best model with accuracy: {test_accuracy:.4f}')
         print('-'*50)
     print(f"Best test accuracy: {global_test_accuracy:.4f}")
-
+    print(f"Training time: {time.time()-start:.2f} seconds")
+    
 if __name__ == '__main__':
     main()
