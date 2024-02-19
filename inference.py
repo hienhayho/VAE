@@ -36,6 +36,7 @@ def main():
     print("-"*50)
     print("Inferencing...")
     output = model(image)
+    output = torch.softmax(output, 1)
     _, predicted = torch.max(output, 1)
     if predicted == 0:
         print('Cat')
