@@ -17,6 +17,7 @@ def load_image(image_path: str, transform = None) -> torch.Tensor:
     image = torch.permute(image, (2, 0, 1))
     if transform:
         image = transform(image)
+    image = image.unsqueeze(0)
     return image
 
 def main():
@@ -32,12 +33,12 @@ def main():
     print("Loading model from checkpoint...")
     model.load_state_dict(torch.load(args.checkpoint_path))
     image = load_image(args.image_path, custom_transform)
-    image = image.unsqueeze(0)
     print("-"*50)
     print("Inferencing...")
     output = model(image)
     output = torch.softmax(output, 1)
-    _, predicted = torch.max(output, 1)
+    value, predicted = torch.max(output, 1)
+    print(f"Confidence: {value.item():.4f}")
     if predicted == 0:
         print('Cat')
     else:

@@ -164,16 +164,17 @@ class VGG16(nn.Module): # (3, 224, 224)
         x = self.relu(self.cnn14(x))
         x = self.relu(self.cnn15(x))
         x = self.cnn16(x)
-        # x = x.view(x.size(0), -1)
-        x = nn.Flatten(x)
+        x = x.view(x.size(0), -1)
+        # x = nn.Flatten(x)
         return x
 
 def main():
     data_path = '../data'
-    batch_size = 128
+    batch_size = 1
+    size = (224, 224)
     
     custom_tranform = transforms.Compose([
-        transforms.Resize((32, 32)), 
+        transforms.Resize(size=size), 
         # transforms.RandomResizedCrop(size=(32, 32), antialias=True),
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.ToDtype(torch.float32, scale=True),
@@ -187,10 +188,10 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     epochs = 20
-    model = LeNet().to('cuda')
+    model = VGG16().to('cuda')
     # model.load_state_dict(torch.load('best_model.pth'))
     print(model)
-    summary(model, (3, 32, 32))
+    summary(model, (3, 224, 224))
     input("Press Enter to start training...")
     set_seed(226)
     criterion = nn.CrossEntropyLoss()
