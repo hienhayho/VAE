@@ -49,11 +49,17 @@ class Model(nn.Module): # 0.8072 (3, 32, 32)
     def __init__(self):
         super(Model, self).__init__()
         self.cnn1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
+        self.bn1 = nn.BatchNorm2d(32)
         self.cnn2 = nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1)
+        self.bn2 = nn.BatchNorm2d(64)
         self.cnn3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
+        self.bn3 = nn.BatchNorm2d(128)
         self.cnn4 = nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1)
+        self.bn4 = nn.BatchNorm2d(256)
         self.cnn5 = nn.Conv2d(256, 512, kernel_size=3, padding=1)
+        self.bn5 = nn.BatchNorm2d(512)
         self.cnn6 = nn.Conv2d(512, 512, kernel_size=3, stride=2, padding=1)
+        self.bn6 = nn.BatchNorm2d(512)
         self.fc1 = nn.Linear(512*4*4, 1024)
         self.fc2 = nn.Linear(1024, 256)
         self.fc3 = nn.Linear(256, 2)
@@ -62,11 +68,17 @@ class Model(nn.Module): # 0.8072 (3, 32, 32)
     
     def forward(self, x):
         x = self.relu(self.cnn1(x))
+        x = self.bn1(x)
         x = self.relu(self.cnn2(x))
+        x = self.bn2(x)
         x = self.relu(self.cnn3(x))
+        x = self.bn3(x)
         x = self.relu(self.cnn4(x))
+        x = self.bn4(x)
         x = self.relu(self.cnn5(x))
+        x = self.bn5(x)
         x = self.relu(self.cnn6(x))
+        x = self.bn6(x)
         x = x.view(x.size(0), -1)
         x = self.relu(self.fc1(x))
         x = self.relu(self.fc2(x))
@@ -75,11 +87,11 @@ class Model(nn.Module): # 0.8072 (3, 32, 32)
     
     def initialize_weights(self, m):
         if isinstance(m, nn.Linear):
-            init.xavier_normal_(m.weight)
+            init.kaiming_normal_(m.weight, nonlinearity="relu")
             if m.bias is not None:
                 init.constant_(m.bias, 0)
         if isinstance(m, nn.Conv2d):
-            init.xavier_normal_(m.weight)
+            init.kaiming_normal_(m.weight, nonlinearity="relu")
             if m.bias is not None:
                 init.constant_(m.bias, 0)
 
@@ -93,6 +105,17 @@ class LeNet(nn.Module): # 0.7617 (3, 32, 32)
         self.fc1 = nn.Linear(16*6*6, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 2)
+        self.apply(self.initialize_weights)
+        
+    def initialize_weights(self, m):
+        if isinstance(m, nn.Linear):
+            init.xavier_normal_(m.weight)
+            if m.bias is not None:
+                init.constant_(m.bias, 0)
+        if isinstance(m, nn.Conv2d):
+            init.xavier_normal_(m.weight)
+            if m.bias is not None:
+                init.constant_(m.bias, 0)
     
     def forward(self, x):
         x = self.relu(self.cnn1(x))
@@ -168,15 +191,95 @@ class VGG16(nn.Module): # (3, 224, 224)
         # x = nn.Flatten(x)
         return x
 
+class ResNetModel(nn.Module):
+    def __init__(self):
+        super(ResNetModel, self).__init__()
+        self.block1 = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+        self.res1 = nn.Conv2d(3, 64, kernel_size=3, padding=1, stride=2)
+        self.block2 = nn.Sequential(
+            nn.Conv2d(64, 128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+        self.res2 = nn.Conv2d(64, 128, kernel_size=3, padding=1, stride=2)
+        self.block3 = nn.Sequential(
+            nn.Conv2d(128, 256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+        self.res3 = nn.Conv2d(128, 256, kernel_size=3, padding=1, stride=2)
+        self.block4 = nn.Sequential(
+            nn.Conv2d(256, 512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(512, 512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(512, 512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+        self.res4 = nn.Conv2d(256, 512, kernel_size=3, padding=1, stride=2)
+        self.relu = nn.ReLU()
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(512*2*2, 512)
+        self.fc2 = nn.Linear(512, 256)
+        self.fc3 = nn.Linear(256, 2)
+
+        self.apply(self.initialize_weights)
+        
+    def initialize_weights(self, m):
+        if isinstance(m, nn.Linear):
+            init.kaiming_normal_(m.weight, nonlinearity="relu")
+            if m.bias is not None:
+                init.constant_(m.bias, 0)
+        if isinstance(m, nn.Conv2d):
+            init.kaiming_normal_(m.weight, nonlinearity="relu")
+            if m.bias is not None:
+                init.constant_(m.bias, 0)
+    
+    def forward(self, x):
+        temp = x
+        x = self.block1(x)
+        x += self.relu(self.res1(temp))
+        temp = x
+        x = self.block2(x)
+        x += self.relu(self.res2(temp))
+        temp = x
+        x = self.block3(x)
+        x += self.relu(self.res3(temp))
+        temp = x
+        x = self.block4(x)
+        x += self.relu(self.res4(temp))
+        x = self.flatten(x)
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = self.relu(self.fc3(x))
+        return x
+    
 def main():
     data_path = '../data'
-    batch_size = 1
-    size = (224, 224)
+    batch_size = 512
+    size = (32, 32)
     
     custom_tranform = transforms.Compose([
         transforms.Resize(size=size), 
         # transforms.RandomResizedCrop(size=(32, 32), antialias=True),
-        transforms.RandomHorizontalFlip(p=0.5),
+        # transforms.RandomHorizontalFlip(p=0.5),
         transforms.ToDtype(torch.float32, scale=True),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
@@ -188,10 +291,10 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
     epochs = 20
-    model = VGG16().to('cuda')
+    model = ResNetModel().to('cuda')
     # model.load_state_dict(torch.load('best_model.pth'))
     print(model)
-    summary(model, (3, 224, 224))
+    summary(model, (3, *size))
     input("Press Enter to start training...")
     set_seed(226)
     criterion = nn.CrossEntropyLoss()
